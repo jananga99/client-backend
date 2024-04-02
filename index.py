@@ -8,8 +8,11 @@ app = Flask(__name__)
 # Connect to MongoDB
 MONGODB_URI = 'mongodb+srv://abcd:abcd@cluster0.yrys0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
 client = MongoClient(MONGODB_URI)
-db = client['distributed']
-collection = db['global-db']
+global_db = client['global']
+global_metadata = global_db['metadata']
+
+local_db = client['local-db']
+local_metadata = local_db['metadata']
 
 
 class AccessType(Enum):
@@ -71,13 +74,12 @@ def upload_file():
     return jsonify({'success': True, 'process': 'File uploaded successfully.'})
 
 def add_to_global_db(metadata):
-    result = collection.insert_one(metadata.__dict__)
+    result = global_metadata.insert_one(metadata)
     return result.inserted_id
 
-def add_to_local_db(metadata, global_id):
-    # Add to local database
-    pass
-
+def add_to_local_db(metadata):
+    result = local_metadata.insert_one(metadata)
+    return result.inserted_id
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run the Flask app in debug mode
