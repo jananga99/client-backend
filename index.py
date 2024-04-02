@@ -134,4 +134,4 @@ def send_to_node(node, chunk_data):
         print(f"Failed to send chunk to node at {url}. Status code: {response.status_code}")
 
 if __name__ == '__main__':
-    app.run(debug=True)  # Run the Flask app in debug mode
+    app.run(debug=True,port=int(os.getenv('PORT', 5000)))  # Run the Flask app in debug mode
