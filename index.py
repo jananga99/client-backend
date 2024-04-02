@@ -4,16 +4,22 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from enum import Enum
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # Connect to MongoDB
-MONGODB_URI = 'mongodb+srv://abcd:abcd@cluster0.yrys0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
-client = MongoClient(MONGODB_URI)
-global_db = client['global']
+local_db_url = os.getenv("LOCAL_DB_URL")
+global_db_url = os.getenv("GLOBAL_DB_URL") 
+global_client = MongoClient(global_db_url)
+global_db = global_client['global']
 global_metadata = global_db['metadata']
 
-local_db = client['local-db']
+local_client = MongoClient(local_db_url)
+local_db = local_client['local-db']
 local_metadata = local_db['metadata']
 local_nodes = local_db['nodes']
 
