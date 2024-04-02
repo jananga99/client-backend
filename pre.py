@@ -10,6 +10,7 @@ def add_nodes():
         local_nodes.insert_one({
             "_id":i+1,
             "address": f"Container {i+1}",
+            "url": f"http://localhost:500{i+1}"
         })
 
 add_nodes()

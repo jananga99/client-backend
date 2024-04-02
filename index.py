@@ -3,6 +3,7 @@ import random
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from enum import Enum
+import requests
 
 app = Flask(__name__)
 
@@ -118,8 +119,13 @@ def random_node_assign(chunks, nodes):
             assigned_chunk_data[i-1]["next_chunk_node_id"] = node_id
     return assigned_chunk_data
 
-def send_to_node(node, chunk):
-    pass
+def send_to_node(node, chunk_data):
+    url = node.url  
+    response = requests.post(url + '/chunk', json=chunk_data)
+    if response.status_code == 200:
+        print(f"Chunk sent successfully to node at {url}.")
+    else:
+        print(f"Failed to send chunk to node at {url}. Status code: {response.status_code}")
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run the Flask app in debug mode
