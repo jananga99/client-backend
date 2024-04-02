@@ -35,14 +35,11 @@ class Metadata:
 
 @app.route('/file', methods=['POST'])
 def upload_file():
-    print("Fle update req received")
     file = request.files['file']
     access_type = request.form['accessType']
-    print(file.filename)
-    print(file.content_type)
-    print(file.content_length)
-    print(access_type)
-    # Split to chunks
+
+    chunks = split_to_chunks(file)
+    
     merkel_root = "Dummy Merkel Root"
     # Randomly assign to nodes
     start_chunk_id = "1"
@@ -80,6 +77,16 @@ def add_to_global_db(metadata):
 def add_to_local_db(metadata):
     result = local_metadata.insert_one(metadata)
     return result.inserted_id
+
+def split_to_chunks(file):
+    chunk_size = 1024
+    chunks = []
+    while True:
+        chunk = file.read(chunk_size)
+        if not chunk:
+            break
+        chunks.append(chunk)
+    return chunks
 
 if __name__ == '__main__':
     app.run(debug=True)  # Run the Flask app in debug mode
