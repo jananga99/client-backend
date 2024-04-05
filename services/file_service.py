@@ -75,11 +75,9 @@ def upload_file(file, access_type):
     # Insert metadata into local and global db
     if access_type == AccessType.PUBLIC.value:
         global_db.insert_metadata(metadata)
-        validate_metadata(metadata, with_id=True)
-        metadata["global_id"] = metadata["id"]
-    local_db.insert_metadata(metadata)
+    else:
+        local_db.insert_metadata(metadata)
     validate_metadata(metadata, with_id=True)
-    metadata["id"] = metadata.get("global_id") or metadata["id"]
 
     # Send chunks to nodes
     for chunk_data in assigned_chunk_data:
