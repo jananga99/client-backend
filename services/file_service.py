@@ -32,7 +32,6 @@ def split_to_chunks(file):
     return chunks
 
 
-# TODO - Need to fix
 def combine_chunks(chunks):
     combined_data = b"".join(
         chunk.encode("utf-8") if isinstance(chunk, str) else chunk for chunk in chunks
@@ -142,3 +141,13 @@ def get_chunk_arr(start_chunk_id, start_chunk_node_id):
         current_chunk_node_id = chunk_data["next_chunk_node_id"]
 
     return got_chunk_arr
+
+
+def test_split_combine_file(file):
+    # Split file into chunks
+    chunks = split_to_chunks(file)
+
+    # Combine chunks
+    combined_file = combine_chunks(chunks)
+
+    return combined_file

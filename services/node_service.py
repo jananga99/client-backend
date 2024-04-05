@@ -4,6 +4,7 @@ import requests
 import db.local_db as local_db
 from validators.validators import validate_metadata, validate_id, validate_node
 from exceptions.error import Error
+from formatters.chunk import to_byte_chunk, to_str_chunk
 
 
 def get_nodes():
@@ -32,11 +33,11 @@ def send_chunk_to_node(node, chunk_data):
         url = "http://localhost:5001"
     response = requests.post(
         url + "/chunk",
-        data={
+        json={
             "id": chunk_data["id"],
             "next_chunk_id": chunk_data.get("next_chunk_id") or "",
             "next_chunk_node_id": chunk_data.get("next_chunk_node_id") or "",
-            "chunk": chunk_data["chunk"],
+            "chunk": to_str_chunk(chunk_data["chunk"]),
         },
     )
     if response.status_code != 200:
@@ -53,4 +54,6 @@ def get_chunk_data_from_node(node, chunk_id):
     if response.status_code != 200:
         message = response.json().get("message") or "Error getting chunk from node"
         raise Error(message, 500)
-    return response.json()
+    chunk_data = response.json()
+    chunk_data["chunk"] = to_byte_chunk(chunk_data["chunk"])
+    return chunk_data

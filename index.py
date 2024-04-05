@@ -59,7 +59,20 @@ def get_all_metadata():
         return jsonify({"message": "Unexpected error occured"})
 
 
+@app.route("/file-test", methods=["POST"])
+def test_file():
+    try:
+        file = request.files["file"]
+        combined_file = file_service.test_split_combine_file(file)
+        data_stream = io.BytesIO(combined_file)
+        return send_file(data_stream, as_attachment=True, download_name=file.filename)
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
+    except Exception as e:
+        print("An error occured")
+        return jsonify({"message": "Unexpected error occured"})
+
+
 if __name__ == "__main__":
-    app.run(
-        debug=True, port=int(os.getenv("PORT", 5000))
-    )  
+    app.run(debug=True, port=int(os.getenv("PORT", 5000)))
