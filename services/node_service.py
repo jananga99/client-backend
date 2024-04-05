@@ -3,6 +3,7 @@ import uuid
 import requests
 import db.local_db as local_db
 from validators.validators import validate_metadata, validate_id, validate_node
+from exceptions.error import Error
 
 
 def get_nodes():
@@ -38,7 +39,9 @@ def send_chunk_to_node(node, chunk_data):
             "chunk": chunk_data["chunk"],
         },
     )
-    return response.status_code == 200
+    if response.status_code != 200:
+        message = response.json().get("message") or "Error sending chunk to node"
+        raise Error(message, 500)
 
 
 def get_chunk_data_from_node(node, chunk_id):
@@ -47,4 +50,7 @@ def get_chunk_data_from_node(node, chunk_id):
     if url != "http://localhost:5001":
         url = "http://localhost:5001"
     response = requests.get(url + "/chunk/" + chunk_id)
+    if response.status_code != 200:
+        message = response.json().get("message") or "Error getting chunk from node"
+        raise Error(message, 500)
     return response.json()
