@@ -4,15 +4,13 @@ from classes.access_type import AccessType
 from bson import ObjectId
 
 
-def validate_metadata(metadata, with_id=False, with_db_id=False, with_global_id=False):
+def validate_metadata(metadata, with_id=False, with_db_id=False):
     if type(metadata) is not dict:
         raise Error("Metadata is not a dictionary", 500)
     if with_id and "id" not in metadata:
         raise Error("id is required in metadata", 500)
     if with_db_id and "_id" not in metadata:
         raise Error("_id is required in metadata", 500)
-    if with_global_id and "global_id" not in metadata:
-        raise Error("global_id is required in metadata", 500)
     if "name" not in metadata:
         raise Error("name is required in metadata", 500)
     if "size" not in metadata:
