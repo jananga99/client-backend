@@ -5,6 +5,8 @@ import services.file_service as file_service
 import os
 import dotenv
 from exceptions.error import Error
+from validators.validators import validate_access_type
+from classes.access_type import AccessType
 
 dotenv.load_dotenv()
 
@@ -22,8 +24,8 @@ def upload_file():
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
-        print("An error occured")
-        return jsonify({"message": "Unexpected error occured"})
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
 
 
 @app.route("/file/<file_id>", methods=["GET"])
@@ -42,21 +44,35 @@ def get_file(file_id):
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
-        print("An error occured")
-        return jsonify({"message": "Unexpected error occured"})
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
 
 
 @app.route("/file", methods=["GET"])
 def get_all_metadata():
     try:
-        all_metadata = file_service.get_all_metadata()
-        return jsonify(all_metadata)
+        access_type = request.args.get("accessType")
+        print(access_type)
+        if access_type is not None:
+            validate_access_type(access_type)
+            if access_type == AccessType.PUBLIC.value:
+                metadata = file_service.get_all_public_metadata()
+            elif access_type == AccessType.PRIVATE.value:
+                metadata = file_service.get_all_private_metadata()
+            else:
+                raise Error("Invalid access type", 500)
+        else:
+            metadata = (
+                file_service.get_all_public_metadata()
+                + file_service.get_all_private_metadata()
+            )
+        return jsonify(metadata)
     except Error as e:
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
-        print("An error occured")
-        return jsonify({"message": "Unexpected error occured"})
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
 
 
 @app.route("/file-test", methods=["POST"])
@@ -70,8 +86,8 @@ def test_file():
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
-        print("An error occured")
-        return jsonify({"message": "Unexpected error occured"})
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
 
 
 if __name__ == "__main__":
