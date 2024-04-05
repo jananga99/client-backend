@@ -84,17 +84,13 @@ def get_chunk_arr(start_chunk_id, start_chunk_node_id):
     current_chunk_node_id = start_chunk_node_id
     got_chunk_data_arr = []
     while current_chunk_id != "" and current_chunk_node_id != "":
-        chunk_data_response = get_chunk_from_node(
+        chunk_data = get_chunk_from_node(
             nodes[int(current_chunk_node_id) - 1], current_chunk_id
         )
-        chunk_data = chunk_data_response["data"]
-        if chunk_data_response["success"]:
-            got_chunk_data_arr.append(chunk_data)
-            if current_chunk_id == chunk_data["next_chunk_id"]:
-                raise Exception("Infinite loop detected")
-            current_chunk_id = chunk_data["next_chunk_id"]
-            current_chunk_node_id = chunk_data["next_chunk_node_id"]
-        else:
-            raise Exception(chunk_data_response["message"])
+        got_chunk_data_arr.append(chunk_data)
+        if current_chunk_id == chunk_data["next_chunk_id"]:
+            raise Exception("Infinite loop detected")
+        current_chunk_id = chunk_data["next_chunk_id"]
+        current_chunk_node_id = chunk_data["next_chunk_node_id"]
     got_chunk_arr = [chunk_data["chunk"] for chunk_data in got_chunk_data_arr]
     return got_chunk_arr

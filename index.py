@@ -16,7 +16,6 @@ def upload_file():
         file = request.files["file"]
         access_type = request.form["accessType"]
         metadata = file_service.upload_file(file, access_type)
-        print(metadata)
         return jsonify(metadata)
     except Exception as e:
         print("An error occured")
@@ -44,7 +43,6 @@ def get_file(file_id):
 def get_all_metadata():
     try:
         all_metadata = file_service.get_all_metadata()
-        print(all_metadata)
         return jsonify(all_metadata)
     except Exception as e:
         print("An error occured")
