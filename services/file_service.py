@@ -23,13 +23,15 @@ from exceptions.error import Error
 def split_to_chunks(file):
     chunk_size = 1024
     chunks = []
+    file_size = 0
     while True:
         chunk = file.read(chunk_size)
         validate_chunk(chunk)
         if not chunk:
             break
         chunks.append(chunk)
-    return chunks
+        file_size += len(chunk)
+    return chunks, file_size
 
 
 def combine_chunks(chunks):
@@ -46,7 +48,7 @@ def upload_file(file, access_type):
     validate_access_type(access_type)
 
     # Split file into chunks
-    chunks = split_to_chunks(file)
+    chunks, file_size = split_to_chunks(file)
 
     # Get available nodes
     nodes = get_nodes()
@@ -62,7 +64,7 @@ def upload_file(file, access_type):
     last_viewed_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     metadata = {
         "name": file.filename,
-        "size": file.content_length,
+        "size": file_size,
         "type": file.content_type,
         "access_type": access_type,
         "merkel_root": merkel_root,
@@ -148,7 +150,7 @@ def get_chunk_arr(start_chunk_id, start_chunk_node_id):
 
 def test_split_combine_file(file):
     # Split file into chunks
-    chunks = split_to_chunks(file)
+    chunks, file_size = split_to_chunks(file)
 
     # Combine chunks
     combined_file = combine_chunks(chunks)
