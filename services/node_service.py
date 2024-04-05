@@ -2,10 +2,14 @@ import random
 import uuid
 import requests
 import db.local_db as local_db
+from validators.validators import validate_metadata, validate_id, validate_node
 
 
 def get_nodes():
-    return local_db.get_all_nodes()
+    nodes = local_db.get_all_nodes()
+    for node in nodes:
+        validate_node(node, with_id=True)
+    return nodes
 
 
 def random_node_assign(chunks, nodes):
@@ -37,7 +41,7 @@ def send_chunk_to_node(node, chunk_data):
     return response.status_code == 200
 
 
-def get_chunk_from_node(node, chunk_id):
+def get_chunk_data_from_node(node, chunk_id):
     url = node["url"]
     # TODO - Remove this line
     if url != "http://localhost:5001":
