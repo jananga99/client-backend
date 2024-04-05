@@ -58,7 +58,7 @@ pip install -r requirements.txt
 To start the backend, run the following command:
 
 ```bash
-python backend.py
+python3 index.py
 ```
 
 ### Interacting with the Backend
