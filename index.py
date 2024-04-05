@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, send_file
 import services.file_service as file_service
 import os
 import dotenv
+from exceptions.error import Error
 
 dotenv.load_dotenv()
 
@@ -16,8 +17,10 @@ def upload_file():
         file = request.files["file"]
         access_type = request.form["accessType"]
         metadata = file_service.upload_file(file, access_type)
-        print(metadata)
         return jsonify(metadata)
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
     except Exception as e:
         print("An error occured")
         return jsonify({"message": "Unexpected error occured"})
@@ -35,6 +38,9 @@ def get_file(file_id):
             download_name=metadata["name"],
             mimetype=metadata["type"],
         )
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
     except Exception as e:
         print("An error occured")
         return jsonify({"message": "Unexpected error occured"})
@@ -44,8 +50,10 @@ def get_file(file_id):
 def get_all_metadata():
     try:
         all_metadata = file_service.get_all_metadata()
-        print(all_metadata)
         return jsonify(all_metadata)
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
     except Exception as e:
         print("An error occured")
         return jsonify({"message": "Unexpected error occured"})
