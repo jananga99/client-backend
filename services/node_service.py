@@ -28,9 +28,8 @@ def random_node_assign(chunks, nodes):
 
 def send_chunk_to_node(node, chunk_data):
     url = node["url"]
-    # TODO - Remove this line
-    if url != "http://localhost:5001":
-        url = "http://localhost:5001"
+    # if url != "http://localhost:5001":
+    #     url = "http://localhost:5001"
     response = requests.post(
         url + "/chunk",
         json={
@@ -47,9 +46,8 @@ def send_chunk_to_node(node, chunk_data):
 
 def get_chunk_data_from_node(node, chunk_id):
     url = node["url"]
-    # TODO - Remove this line
-    if url != "http://localhost:5001":
-        url = "http://localhost:5001"
+    # if url != "http://localhost:5001":
+    #     url = "http://localhost:5001"
     response = requests.get(url + "/chunk/" + chunk_id)
     if response.status_code != 200:
         message = response.json().get("message") or "Error getting chunk from node"
