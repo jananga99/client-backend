@@ -25,7 +25,15 @@ git clone https://github.com/jananga99/client-backend.git
 cd client-backend
 ```
 
-3. Create a virtual environment:
+3. Create the .env
+
+```bash
+cp .env.example .env
+```
+
+Fill the required content
+
+4. Create a virtual environment:
 
 ```bash
 python3 -m venv .venv
