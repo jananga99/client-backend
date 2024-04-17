@@ -2,7 +2,7 @@ import random
 import uuid
 import requests
 import db.local_db as local_db
-from validators.validators import validate_metadata, validate_node
+from validators.validators import validate_node
 from exceptions.error import Error
 from formatters.chunk import to_byte_chunk, to_str_chunk
 
@@ -10,7 +10,7 @@ from formatters.chunk import to_byte_chunk, to_str_chunk
 def get_nodes():
     nodes = local_db.get_all_nodes()
     for node in nodes:
-        validate_node(node, with_id=True)
+        validate_node(node)
     return nodes
 
 

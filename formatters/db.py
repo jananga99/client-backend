@@ -1,13 +1,4 @@
-def from_db_id(val):
-    val["id"] = str(val["_id"])
-    del val["_id"]
-    return val
-
-
-def to_db_id(val):
-    val["_id"] = val["id"]
-    del val["id"]
-    return val
+from schemas.schema import Metadata, Node
 
 
 def from_db_metadata(metadata):
@@ -22,4 +13,26 @@ def from_db_metadata(metadata):
         "start_chunk_node_id": metadata.start_chunk_node_id,
         "created_at": metadata.created_at,
         "lastViewed_at": metadata.lastViewed_at,
+    }
+
+
+def to_db_metadata(metadata):
+    if "id" in metadata:
+        metadata["_id"] = metadata["id"]
+        del metadata["id"]
+    return Metadata(**metadata)
+
+
+def to_db_node(node):
+    if "id" in node:
+        node["_id"] = node["id"]
+        del node["id"]
+    return Node(**node)
+
+
+def from_db_node(node):
+    return {
+        "id": node._id,
+        "address": node.address,
+        "url": node.url,
     }

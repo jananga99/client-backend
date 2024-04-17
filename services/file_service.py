@@ -76,10 +76,10 @@ def upload_file(file, access_type):
 
     # Insert metadata into local and global db
     if access_type == AccessType.PUBLIC.value:
-        global_db.insert_metadata(metadata)
+        metadata = global_db.insert_metadata(metadata)
     else:
-        local_db.insert_metadata(metadata)
-    validate_metadata(metadata, with_id=True)
+        metadata = local_db.insert_metadata(metadata)
+    validate_metadata(metadata)
 
     # Send chunks to nodes
     for chunk_data in assigned_chunk_data:
@@ -99,7 +99,7 @@ def get_file(file_id):
         metadata = local_db.get_one_metadata(file_id)
     except Error:
         metadata = global_db.get_one_metadata(file_id)
-    validate_metadata(metadata, with_id=True)
+    validate_metadata(metadata)
 
     # Get chunks from nodes
     got_chunk_arr = get_chunk_arr(
@@ -115,14 +115,14 @@ def get_file(file_id):
 def get_all_public_metadata():
     all_metadata = global_db.get_all_metadata()
     for metadata in all_metadata:
-        validate_metadata(metadata, with_id=True)
+        validate_metadata(metadata)
     return all_metadata
 
 
 def get_all_private_metadata():
     all_metadata = local_db.get_all_metadata()
     for metadata in all_metadata:
-        validate_metadata(metadata, with_id=True)
+        validate_metadata(metadata)
     return all_metadata
 
 
