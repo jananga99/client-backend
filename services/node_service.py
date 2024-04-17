@@ -2,7 +2,7 @@ import random
 import uuid
 import requests
 import db.local_db as local_db
-from validators.validators import validate_metadata, validate_id, validate_node
+from validators.validators import validate_metadata, validate_node
 from exceptions.error import Error
 from formatters.chunk import to_byte_chunk, to_str_chunk
 

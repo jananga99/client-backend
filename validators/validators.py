@@ -1,7 +1,6 @@
 from datetime import datetime
 from exceptions.error import Error
 from classes.access_type import AccessType
-from bson import ObjectId
 
 
 def validate_metadata(metadata, with_id=False, with_db_id=False):
@@ -33,8 +32,8 @@ def validate_metadata(metadata, with_id=False, with_db_id=False):
     return metadata
 
 
-def validate_id(id):
-    if type(id) is not str and type(id) is not ObjectId:
+def validate_metadata_id(id):
+    if type(id) is not str:
         raise Error(f"id: {id} is not a string, but {type(id)}", 500)
     return id
 

@@ -14,7 +14,7 @@ from validators.validators import (
     validate_access_type,
     validate_node,
     validate_metadata,
-    validate_id,
+    validate_metadata_id,
     validate_chunk_data,
 )
 from exceptions.error import Error
@@ -92,7 +92,7 @@ def upload_file(file, access_type):
 
 def get_file(file_id):
     # Validate file_id
-    validate_id(file_id)
+    validate_metadata_id(file_id)
 
     # Get metadata from local and global db
     try:

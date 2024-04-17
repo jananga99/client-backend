@@ -1,5 +1,4 @@
 import io
-from bson import ObjectId
 from flask import Flask, request, jsonify, send_file
 import services.file_service as file_service
 import os
@@ -24,6 +23,7 @@ def upload_file():
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
+        print(e)
         print("An unexpected error occured")
         return jsonify({"message": "Unexpected error occured"}), 500
 
@@ -31,7 +31,6 @@ def upload_file():
 @app.route("/file/<file_id>", methods=["GET"])
 def get_file(file_id):
     try:
-        file_id = ObjectId(file_id)
         metadata, combined_file = file_service.get_file(file_id)
         data_stream = io.BytesIO(combined_file)
         return send_file(
@@ -44,6 +43,7 @@ def get_file(file_id):
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
+        print(e)
         print("An unexpected error occured")
         return jsonify({"message": "Unexpected error occured"}), 500
 
@@ -52,7 +52,6 @@ def get_file(file_id):
 def get_all_metadata():
     try:
         access_type = request.args.get("accessType")
-        print(access_type)
         if access_type is not None:
             validate_access_type(access_type)
             if access_type == AccessType.PUBLIC.value:
@@ -71,6 +70,7 @@ def get_all_metadata():
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
+        print(e)
         print("An unexpected error occured")
         return jsonify({"message": "Unexpected error occured"}), 500
 
@@ -86,6 +86,7 @@ def test_file():
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
     except Exception as e:
+        print(e)
         print("An unexpected error occured")
         return jsonify({"message": "Unexpected error occured"}), 500
 
