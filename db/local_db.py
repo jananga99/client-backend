@@ -1,4 +1,5 @@
 import os
+import uuid
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from exceptions.error import Error
@@ -19,8 +20,8 @@ Session = sessionmaker(bind=engine)
 
 
 def insert_metadata(metadata):
-    print("Start")
     validate_metadata(metadata, with_id=False)
+    metadata["id"] = str(uuid.uuid4().hex)
     session = Session()
     db_metadata = to_db_metadata(metadata)
     session.add(db_metadata)
