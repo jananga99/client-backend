@@ -1,5 +1,6 @@
 import io
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 import services.file_service as file_service
 import os
 import dotenv
@@ -10,6 +11,7 @@ from classes.access_type import AccessType
 dotenv.load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route("/file", methods=["POST"])
@@ -19,6 +21,7 @@ def upload_file():
         access_type = request.form["accessType"]
         metadata = file_service.upload_file(file, access_type)
         return jsonify(metadata)
+
     except Error as e:
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
@@ -62,8 +65,8 @@ def get_all_metadata():
                 raise Error("Invalid access type", 500)
         else:
             metadata = (
-                file_service.get_all_public_metadata()
-                + file_service.get_all_private_metadata()
+                    file_service.get_all_public_metadata()
+                    + file_service.get_all_private_metadata()
             )
         return jsonify(metadata)
     except Error as e:
