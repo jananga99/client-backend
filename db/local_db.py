@@ -51,6 +51,16 @@ def get_all_metadata():
         validate_metadata(metadata)
     return all_metadata
 
+def delete_metadata(id):
+    validate_metadata_id(id)
+    session = Session()
+    db_metadata = session.query(Metadata).filter_by(_id=id).first()
+    if db_metadata is None:
+        raise Error(f"Metadata with id: {id} not found", 404)
+    session.delete(db_metadata)
+    session.commit()
+    session.close()
+
 
 def insert_node(node):
     validate_node(node)

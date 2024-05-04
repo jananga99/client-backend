@@ -91,5 +91,21 @@ def test_file():
         return jsonify({"message": "Unexpected error occured"}), 500
 
 
+# Delete route
+@app.route("/file/<file_id>", methods=["DELETE"])
+def delete_file(file_id):
+    try:
+        file_service.delete_file(file_id)
+        print("File deleted in delete_file")
+        return jsonify({"message": "File deleted successfully"})
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
+    except Exception as e:
+        print(e)
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=int(os.getenv("PORT", 5000)))
