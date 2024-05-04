@@ -66,6 +66,22 @@ def delete_metadata(id):
     session.close()
 
 
+def update_metadata(id, metadata):
+    validate_metadata_id(id)
+    validate_metadata(metadata)
+    session = Session()
+    db_metadata = session.query(Metadata).filter_by(_id=id).first()
+    if db_metadata is None:
+        raise Error(f"Metadata with id: {id} not found", 404)
+    db_metadata.name = metadata["name"]
+    db_metadata.type = metadata["type"]
+    db_metadata.size = metadata["size"]
+    session.commit()
+    metadata = from_db_metadata(db_metadata)
+    session.close()
+    return metadata
+
+
 def insert_node(node):
     validate_node(node)
     session = Session()

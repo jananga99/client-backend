@@ -200,3 +200,58 @@ def delete_file(file_id):
     else:
         local_db.delete_metadata(file_id)
         print("Delete metadata from local db in delete file")
+
+
+def make_public(file_id):
+    print("Make public called")
+    # Validate file_id
+    validate_metadata_id(file_id)
+    print("Metadata id validated in make public")
+
+    if(objectid.ObjectId.is_valid(file_id)):
+        raise Error("File id is public. Cannot make public a file that is already public", 400)
+
+    # Get metadata from local db
+    metadata = local_db.get_one_metadata(file_id)
+    print("Metadata got from global db in make public")
+    metadata["access_type"] = AccessType.PUBLIC.value
+    validate_metadata(metadata)
+    print("Metadata validated in make public")
+
+
+    # Insert metadata into global db
+    metadata = global_db.insert_metadata(metadata)
+    print("Metadata got from local db in make public")
+
+    # Delete metadata from local db
+    local_db.delete_metadata(file_id)
+    print("Metadata deleted fromlocal db in make public")
+
+    return metadata
+
+
+def make_private(file_id):
+    print("Mae private called")
+    # Validate file_id
+    validate_metadata_id(file_id)
+    print("Metadata id validated in make private")
+
+    if(not objectid.ObjectId.is_valid(file_id)):
+        raise Error("File id is private. Cannot make private a file that is already private", 400)
+
+    # Get metadata from global db
+    metadata = global_db.get_one_metadata(file_id)
+    print("Metadata got from global db in make private")
+    metadata["access_type"] = AccessType.PRIVATE.value
+    validate_metadata(metadata)
+    print("Metadata validated in make private")
+
+    # Insert metadata into local db
+    metadata = local_db.insert_metadata(metadata)
+    print("Metadata got from global db in make private")
+
+    # Delete metadata from global db
+    global_db.delete_metadata(file_id)
+    print("Metadata deleted from global db in make private")
+
+    return metadata
