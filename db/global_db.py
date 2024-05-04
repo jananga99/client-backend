@@ -39,8 +39,11 @@ def delete_metadata(id):
     global_metadata.delete_one({"_id": ObjectId(id)})
 
 
-def get_all_metadata():
-    all_metadata = list(global_metadata.find({}))
+def get_all_metadata(search=""):
+    query = {}  
+    if search: 
+        query["name"] = {"$regex": search, "$options": "i"}  
+    all_metadata = list(global_metadata.find(query))
     for i in range(len(all_metadata)):
         all_metadata[i] = from_global_db_metadata(all_metadata[i])
         validate_metadata(all_metadata[i])

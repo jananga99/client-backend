@@ -42,14 +42,18 @@ def get_one_metadata(id):
     return metadata
 
 
-def get_all_metadata():
+def get_all_metadata(search=""):
     session = Session()
-    all_db_metadata = session.query(Metadata).all()
+    query = session.query(Metadata)
+    if search:
+        query = query.filter(Metadata.name.ilike(f"%{search}%"))
+    all_db_metadata = query.all()
     session.close()
     all_metadata = [from_db_metadata(metadata) for metadata in all_db_metadata]
     for metadata in all_metadata:
         validate_metadata(metadata)
     return all_metadata
+
 
 def delete_metadata(id):
     validate_metadata_id(id)
