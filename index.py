@@ -52,18 +52,19 @@ def get_file(file_id):
 def get_all_metadata():
     try:
         access_type = request.args.get("accessType")
+        search = request.args.get("search")
         if access_type is not None:
             validate_access_type(access_type)
             if access_type == AccessType.PUBLIC.value:
-                metadata = file_service.get_all_public_metadata()
+                metadata = file_service.get_all_public_metadata(search=search)
             elif access_type == AccessType.PRIVATE.value:
-                metadata = file_service.get_all_private_metadata()
+                metadata = file_service.get_all_private_metadata(search=search)
             else:
                 raise Error("Invalid access type", 500)
         else:
             metadata = (
-                file_service.get_all_public_metadata()
-                + file_service.get_all_private_metadata()
+                file_service.get_all_public_metadata(search=search)
+                + file_service.get_all_private_metadata(search=search)
             )
         return jsonify(metadata)
     except Error as e:

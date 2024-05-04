@@ -116,15 +116,15 @@ def get_file(file_id):
     return metadata, combined_file
 
 
-def get_all_public_metadata():
-    all_metadata = global_db.get_all_metadata()
+def get_all_public_metadata(search=""):
+    all_metadata = global_db.get_all_metadata(search)
     for metadata in all_metadata:
         validate_metadata(metadata)
     return all_metadata
 
 
-def get_all_private_metadata():
-    all_metadata = local_db.get_all_metadata()
+def get_all_private_metadata(search=""):
+    all_metadata = local_db.get_all_metadata(search)
     for metadata in all_metadata:
         validate_metadata(metadata)
     return all_metadata
