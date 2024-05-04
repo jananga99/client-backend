@@ -43,6 +43,15 @@ def send_chunk_to_node(node, chunk_data):
         message = response.json().get("message") or "Error sending chunk to node"
         raise Error(message, 500)
 
+def delete_chunk_from_node(node, chunk_id):
+    url = node["url"]
+    # if url != "http://localhost:5001":
+    #     url = "http://localhost:5001"
+    response = requests.delete(url + "/chunk/" + chunk_id)
+    if response.status_code != 200:
+        message = response.json().get("message") or "Error deleting chunk from node"
+        raise Error(message, 500)
+
 
 def get_chunk_data_from_node(node, chunk_id):
     url = node["url"]

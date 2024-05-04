@@ -83,6 +83,7 @@ python3 index.py
 ```
 
 Alternatively, ```start.sh``` can be used.
+
 ```bash
 chmod +x ./start.sh
 ./start.sh

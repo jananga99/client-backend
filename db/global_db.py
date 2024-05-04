@@ -31,6 +31,14 @@ def get_one_metadata(id):
     return metadata
 
 
+def delete_metadata(id):
+    validate_metadata_id(id)
+    metadata = global_metadata.find_one({"_id": ObjectId(id)})
+    if metadata is None:
+        raise Error(f"Metadata with id: {id} not found", 404)
+    global_metadata.delete_one({"_id": ObjectId(id)})
+
+
 def get_all_metadata():
     all_metadata = list(global_metadata.find({}))
     for i in range(len(all_metadata)):
