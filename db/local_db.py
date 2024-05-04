@@ -1,4 +1,5 @@
 import os
+import uuid
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from exceptions.error import Error
@@ -19,8 +20,8 @@ Session = sessionmaker(bind=engine)
 
 
 def insert_metadata(metadata):
-    print("Start")
     validate_metadata(metadata, with_id=False)
+    metadata["id"] = str(uuid.uuid4().hex)
     session = Session()
     db_metadata = to_db_metadata(metadata)
     session.add(db_metadata)
@@ -41,14 +42,28 @@ def get_one_metadata(id):
     return metadata
 
 
-def get_all_metadata():
+def get_all_metadata(search=""):
     session = Session()
-    all_db_metadata = session.query(Metadata).all()
+    query = session.query(Metadata)
+    if search:
+        query = query.filter(Metadata.name.ilike(f"%{search}%"))
+    all_db_metadata = query.all()
     session.close()
     all_metadata = [from_db_metadata(metadata) for metadata in all_db_metadata]
     for metadata in all_metadata:
         validate_metadata(metadata)
     return all_metadata
+
+
+def delete_metadata(id):
+    validate_metadata_id(id)
+    session = Session()
+    db_metadata = session.query(Metadata).filter_by(_id=id).first()
+    if db_metadata is None:
+        raise Error(f"Metadata with id: {id} not found", 404)
+    session.delete(db_metadata)
+    session.commit()
+    session.close()
 
 
 def insert_node(node):

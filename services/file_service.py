@@ -5,6 +5,7 @@ from services.node_service import (
     get_nodes,
     random_node_assign,
     send_chunk_to_node,
+    delete_chunk_from_node,
 )
 import db.global_db as global_db
 import db.local_db as local_db
@@ -18,6 +19,7 @@ from validators.validators import (
     validate_chunk_data,
 )
 from exceptions.error import Error
+from bson import objectid
 
 
 def split_to_chunks(file):
@@ -95,10 +97,12 @@ def get_file(file_id):
     validate_metadata_id(file_id)
 
     # Get metadata from local and global db
-    try:
-        metadata = local_db.get_one_metadata(file_id)
-    except Error:
+    if objectid.ObjectId.is_valid(file_id):
         metadata = global_db.get_one_metadata(file_id)
+        print("Got metadata from global db in get file")
+    else:
+        metadata = local_db.get_one_metadata(file_id)
+        print("Got metadata from local db in get file")
     validate_metadata(metadata)
 
     # Get chunks from nodes
@@ -112,15 +116,15 @@ def get_file(file_id):
     return metadata, combined_file
 
 
-def get_all_public_metadata():
-    all_metadata = global_db.get_all_metadata()
+def get_all_public_metadata(search=""):
+    all_metadata = global_db.get_all_metadata(search)
     for metadata in all_metadata:
         validate_metadata(metadata)
     return all_metadata
 
 
-def get_all_private_metadata():
-    all_metadata = local_db.get_all_metadata()
+def get_all_private_metadata(search=""):
+    all_metadata = local_db.get_all_metadata(search)
     for metadata in all_metadata:
         validate_metadata(metadata)
     return all_metadata
@@ -156,3 +160,43 @@ def test_split_combine_file(file):
     combined_file = combine_chunks(chunks)
 
     return combined_file
+
+
+def delete_file(file_id):
+    print("Delete file called with id " + file_id)
+    # Validate file_id
+    validate_metadata_id(file_id)
+    print("Validated file id in delete_file")
+    # Get metadata from local and global db
+    if objectid.ObjectId.is_valid(file_id):
+        metadata = global_db.get_one_metadata(file_id)
+        print("Got metadata from global db in delete file")
+    else:
+        metadata = local_db.get_one_metadata(file_id)
+        print("Got metadata from local db in delete file")
+    validate_metadata(metadata)
+    print("Validated metadata in delete_file")
+    # Delete chunks
+    print("Got chunk arr in delete_file")
+    current_chunk_id = metadata["start_chunk_id"]
+    current_chunk_node_id = metadata["start_chunk_node_id"]
+    # Get available nodes
+    nodes = get_nodes()
+    while current_chunk_id != "" and current_chunk_node_id != "":
+        chunk_data = get_chunk_data_from_node(
+            nodes[int(current_chunk_node_id) - 1], current_chunk_id
+        )
+        validate_chunk_data(chunk_data)
+        delete_chunk_from_node(nodes[int(current_chunk_node_id) - 1], current_chunk_id)
+        if current_chunk_id == chunk_data["next_chunk_id"]:
+            raise Error("Next chunk id is same as current chunk id", 500)
+        current_chunk_id = chunk_data["next_chunk_id"]
+        current_chunk_node_id = chunk_data["next_chunk_node_id"]
+    print("Deleted chunks in delete_file")
+    # Delete metadata from local and global db
+    if objectid.ObjectId.is_valid(file_id):
+        global_db.delete_metadata(file_id)
+        print("Delete metadata from global db in delete file")
+    else:
+        local_db.delete_metadata(file_id)
+        print("Delete metadata from local db in delete file")

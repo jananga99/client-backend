@@ -39,7 +39,7 @@ Fill the required content
 python3 -m venv .venv
 ```
 
-4. Activate the virtual environment. This step may vary depending on your operating system:
+5. Activate the virtual environment. This step may vary depending on your operating system:
 
 #### For Windows
 
@@ -53,10 +53,22 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-5. Install the required dependencies:
+6. Install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+7. Run the pre.py
+
+```bash
+python3 pre.py
+```
+
+Alternatively, ```pre.sh``` can be used to automate steps 4,5,6 and 7
+```bash
+chmod +x ./pre.sh
+./pre.sh
 ```
 
 ## Usage
@@ -66,7 +78,15 @@ pip install -r requirements.txt
 To start the backend, run the following command:
 
 ```bash
+source .venv/bin/activate
 python3 index.py
+```
+
+Alternatively, ```start.sh``` can be used.
+
+```bash
+chmod +x ./start.sh
+./start.sh
 ```
 
 ### Interacting with the Backend
