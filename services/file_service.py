@@ -23,7 +23,7 @@ from bson import objectid
 
 
 def split_to_chunks(file):
-    chunk_size = 1024
+    chunk_size = 1024 * 32
     chunks = []
     file_size = 0
     while True:
