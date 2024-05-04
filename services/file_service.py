@@ -208,8 +208,10 @@ def make_public(file_id):
     validate_metadata_id(file_id)
     print("Metadata id validated in make public")
 
-    if(objectid.ObjectId.is_valid(file_id)):
-        raise Error("File id is public. Cannot make public a file that is already public", 400)
+    if objectid.ObjectId.is_valid(file_id):
+        raise Error(
+            "File id is public. Cannot make public a file that is already public", 400
+        )
 
     # Get metadata from local db
     metadata = local_db.get_one_metadata(file_id)
@@ -217,7 +219,6 @@ def make_public(file_id):
     metadata["access_type"] = AccessType.PUBLIC.value
     validate_metadata(metadata)
     print("Metadata validated in make public")
-
 
     # Insert metadata into global db
     metadata = global_db.insert_metadata(metadata)
@@ -236,8 +237,11 @@ def make_private(file_id):
     validate_metadata_id(file_id)
     print("Metadata id validated in make private")
 
-    if(not objectid.ObjectId.is_valid(file_id)):
-        raise Error("File id is private. Cannot make private a file that is already private", 400)
+    if not objectid.ObjectId.is_valid(file_id):
+        raise Error(
+            "File id is private. Cannot make private a file that is already private",
+            400,
+        )
 
     # Get metadata from global db
     metadata = global_db.get_one_metadata(file_id)
@@ -254,4 +258,23 @@ def make_private(file_id):
     global_db.delete_metadata(file_id)
     print("Metadata deleted from global db in make private")
 
+    return metadata
+
+
+# Rename a file, check whether it is in global or local, then updates the name
+def rename(file_id, new_name):
+    validate_metadata_id(file_id)
+    # Get metadata from local and global db
+    if objectid.ObjectId.is_valid(file_id):
+        metadata = global_db.get_one_metadata(file_id)
+        print("Got metadata from global db in rename file")
+        metadata["name"] = new_name
+        validate_metadata(metadata)
+        metadata = global_db.update_metadata(file_id, metadata)
+    else:
+        metadata = local_db.get_one_metadata(file_id)
+        print("Got metadata from local db in rename file")
+        metadata["name"] = new_name
+        validate_metadata(metadata)
+        metadata = local_db.update_metadata(file_id, metadata)
     return metadata

@@ -110,6 +110,22 @@ def delete_file(file_id):
         return jsonify({"message": "Unexpected error occured"}), 500
 
 
+# Update route
+@app.route("/file/<file_id>", methods=["PUT"])
+def update_file(file_id):
+    try:
+        new_name = request.json["name"]
+        metadata = file_service.rename(file_id, new_name)
+        return jsonify(metadata)
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
+    except Exception as e:
+        print(e)
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
+
+
 # Make file public
 @app.route("/public/<file_id>", methods=["POST"])
 def make_public(file_id):
