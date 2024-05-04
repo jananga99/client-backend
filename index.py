@@ -65,10 +65,9 @@ def get_all_metadata():
             else:
                 raise Error("Invalid access type", 500)
         else:
-            metadata = (
-                file_service.get_all_public_metadata(search=search)
-                + file_service.get_all_private_metadata(search=search)
-            )
+            metadata = file_service.get_all_public_metadata(
+                search=search
+            ) + file_service.get_all_private_metadata(search=search)
         return jsonify(metadata)
     except Error as e:
         print("Error : ", e.message)
@@ -102,6 +101,36 @@ def delete_file(file_id):
         file_service.delete_file(file_id)
         print("File deleted in delete_file")
         return jsonify({"message": "File deleted successfully"})
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
+    except Exception as e:
+        print(e)
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
+
+
+# Make file public
+@app.route("/public/<file_id>", methods=["POST"])
+def make_public(file_id):
+    try:
+        metadata = file_service.make_public(file_id)
+        return jsonify(metadata)
+    except Error as e:
+        print("Error : ", e.message)
+        return jsonify({"message": e.message}), e.status_code
+    except Exception as e:
+        print(e)
+        print("An unexpected error occured")
+        return jsonify({"message": "Unexpected error occured"}), 500
+
+
+# Make file private
+@app.route("/private/<file_id>", methods=["POST"])
+def make_private(file_id):
+    try:
+        metadata = file_service.make_private(file_id)
+        return jsonify(metadata)
     except Error as e:
         print("Error : ", e.message)
         return jsonify({"message": e.message}), e.status_code
