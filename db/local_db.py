@@ -76,6 +76,7 @@ def update_metadata(id, metadata):
     db_metadata.name = metadata["name"]
     db_metadata.type = metadata["type"]
     db_metadata.size = metadata["size"]
+    db_metadata.lastViewed_at = metadata["lastViewed_at"]
     session.commit()
     metadata = from_db_metadata(db_metadata)
     session.close()

@@ -113,6 +113,16 @@ def get_file(file_id):
     # Combine chunks
     combined_file = combine_chunks(got_chunk_arr)
 
+    # Update last viewed at
+    metadata["lastViewed_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if objectid.ObjectId.is_valid(file_id):
+        metadata = global_db.update_metadata(file_id, metadata)
+        print("Updated metadata in global db in get file")
+    else:
+        metadata = local_db.update_metadata(file_id, metadata)
+        print("Updated metadata in local db in get file")
+    validate_metadata(metadata)
+
     return metadata, combined_file
 
 
@@ -128,6 +138,16 @@ def get_all_private_metadata(search=""):
     for metadata in all_metadata:
         validate_metadata(metadata)
     return all_metadata
+
+
+def get_one_metadata(file_id):
+    validate_metadata_id(file_id)
+    if objectid.ObjectId.is_valid(file_id):
+        metadata = global_db.get_one_metadata(file_id)
+    else:
+        metadata = local_db.get_one_metadata(file_id)
+    validate_metadata(metadata)
+    return metadata
 
 
 def get_chunk_arr(start_chunk_id, start_chunk_node_id):
