@@ -20,6 +20,7 @@ from validators.validators import (
 )
 from exceptions.error import Error
 from bson import objectid
+from classes.merkle import MerkleTree
 
 
 def split_to_chunks(file):
@@ -59,7 +60,8 @@ def upload_file(file, access_type):
     assigned_chunk_data = random_node_assign(chunks, nodes)
 
     # Create metadata
-    merkel_root = "Dummy Merkel Root"
+    merkle_tree = MerkleTree(chunks)
+    merkel_root = merkle_tree.get_root()
     start_chunk_id = assigned_chunk_data[0]["id"]
     start_chunk_node_id = assigned_chunk_data[0]["node_id"]
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -109,6 +111,12 @@ def get_file(file_id):
     got_chunk_arr = get_chunk_arr(
         metadata["start_chunk_id"], metadata["start_chunk_node_id"]
     )
+
+    # Checking for merkle tree root
+    merkle_tree = MerkleTree(got_chunk_arr)
+    if merkle_tree.get_root() != metadata["merkel_root"]:
+        raise Error("Merkle root does not match", 500)
+
 
     # Combine chunks
     combined_file = combine_chunks(got_chunk_arr)

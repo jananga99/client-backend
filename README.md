@@ -104,6 +104,7 @@ Currently, the backend supports the following file types for testing purposes:
 - Images (e.g., JPEG, PNG, GIF)
 - Videos (e.g., MP4, AVI, MOV)
 - Text files (e.g., TXT)
+- Excel files (e.g., XLSX, CSV)
 
 ## File Access Types
 
